@@ -4,7 +4,7 @@
     "metadata": {
         "name": "node-alpine-10-docker",
         "annotations": {
-            "openshift.io/display-name": "NodeJS",
+            "openshift.io/display-name": "Node.js:10-alpine Docker",
             "description": "A Node.js application",
             "tags": "node, nodejs, node.js, 10, alpine",
             "iconClass": "icon-nodejs",
@@ -109,7 +109,7 @@
                     }
                 ],
                 "postCommit": {
-                    "script": "npm lint"
+                    "script": "npm run lint"
                 }
             }
         },
