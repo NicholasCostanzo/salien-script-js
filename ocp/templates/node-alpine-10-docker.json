@@ -1,0 +1,301 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "node-alpine-10-docker",
+        "annotations": {
+            "openshift.io/display-name": "NodeJS",
+            "description": "A Node.js application",
+            "tags": "node, nodejs, node.js, 10, alpine",
+            "iconClass": "icon-nodejs",
+            "template.openshift.io/long-description": "This template defines resources needed to develop a NodeJS application, including a build configuration and application deployment configuration.",
+            "template.openshift.io/provider-display-name": "NicholasCostanzo"
+        }
+    },
+    "message": "The following service(s) have been created in your project: ${COMPONENT_NAME}.",
+    "labels": {
+        "template": "node-alpine-10-docker"
+    },
+    "objects": [
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${COMPONENT_NAME}",
+                "labels": {
+                    "component": "${COMPONENT_NAME}"
+                },
+                "annotations": {
+                    "description": "Exposes and load balances the application pods"
+                }
+            },
+            "spec": {
+                "ports": [ ],
+                "selector": {
+                    "name": "${COMPONENT_NAME}"
+                }
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${COMPONENT_NAME}",
+                "labels": {
+                    "component": "${COMPONENT_NAME}"
+                },
+                "annotations": {
+                    "description": "Keeps track of changes in the application image"
+                }
+            }
+        },
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${COMPONENT_NAME}",
+                "labels": {
+                    "component": "${COMPONENT_NAME}"
+                },
+                "annotations": {
+                    "description": "Defines how to build the application"
+                }
+            },
+            "spec": {
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "${SOURCE_REPOSITORY_URL}",
+                        "ref": "${SOURCE_REPOSITORY_REF}"
+                    },
+                    "contextDir": "${CONTEXT_DIR}",
+                    "sourceSecret": {
+                        "name": "gitsecret"
+                    }
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "namespace": "njc-sandbox",
+                            "name": "node:10-alpine"
+                        },
+                        "env": []
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${COMPONENT_NAME}:latest"
+                    }
+                },
+                "resources": {
+                    "requests": {
+                        "cpu": "${BUILD_CPU_REQUEST}",
+                        "memory": "${BUILD_MEM_REQUEST}"
+                    },
+                    "limits": {
+                        "cpu": "${BUILD_CPU_LIMIT}",
+                        "memory": "${BUILD_MEM_LIMIT}"
+                    }
+                },
+                "triggers": [
+                    {
+                        "type": "ImageChange"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "postCommit": {
+                    "script": "npm lint"
+                }
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${COMPONENT_NAME}",
+                "labels": {
+                    "component": "${COMPONENT_NAME}"
+                },
+                "annotations": {
+                    "description": "Defines how to deploy the application server"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Rolling"
+                },
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "${COMPONENT_NAME}"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "${COMPONENT_NAME}:latest"
+                            }
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "name": "${COMPONENT_NAME}"
+                },
+                "template": {
+                    "metadata": {
+                        "name": "${COMPONENT_NAME}",
+                        "labels": {
+                            "name": "${COMPONENT_NAME}"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "${COMPONENT_NAME}",
+                                "image": "${COMPONENT_NAME}:latest",
+                                "ports": [],
+                                "env": [
+                                    {
+                                        "name": "DEV_MODE",
+                                        "value": "${DEV_MODE}"
+                                    },
+                                    {
+                                        "name": "DEBUG",
+                                        "value": "${COMPONENT_NAME}"
+                                    },
+                                    {
+                                        "name": "POD_NAMESPACE",
+                                        "valueFrom": {
+                                            "fieldRef": {
+                                                "fieldPath": "metadata.namespace"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "POD_NAME",
+                                        "valueFrom": {
+                                            "fieldRef": {
+                                                "fieldPath": "metadata.name"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "resources": {
+                                    "requests": {
+                                        "cpu": "${DEPLOY_CPU_REQUEST}",
+                                        "memory": "${DEPLOY_MEM_REQUEST}"
+                                    },
+                                    "limits": {
+                                        "cpu": "${DEPLOY_CPU_LIMIT}",
+                                        "memory": "${DEPLOY_MEM_LIMIT}"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "name": "COMPONENT_NAME",
+            "displayName": "Component Name",
+            "description": "The name assigned to all of the objects defined in this template.",
+            "required": true,
+            "value": "nodejs-example"
+        },
+        {
+            "name": "SOURCE_REPOSITORY_URL",
+            "displayName": "Git Repository URL",
+            "description": "The URL of the repository with your application source code.",
+            "required": true,
+            "value": ""
+        },
+        {
+            "name": "SOURCE_REPOSITORY_REF",
+            "displayName": "Git Reference",
+            "description": "Set this to a branch name, tag or other ref of your repository if you are not using the default branch.",
+            "required": true,
+            "value": "master"
+        },
+        {
+            "name": "CONTEXT_DIR",
+            "displayName": "Context Directory",
+            "description": "Set this to the relative path to your project if it is not in the root of your repository."
+        },
+        {
+            "name": "DEV_MODE",
+            "displayName": "Dev Mode",
+            "value": "false",
+            "description": "Flag for using nodemon to support dynamic container code updates.",
+            "required": true
+        },
+        {
+            "name": "BUILD_CPU_REQUEST",
+            "displayName": "Build CPU Request",
+            "description": "The requested CPU for a build.",
+            "value": "100m",
+            "required": true
+        },
+        {
+            "name": "BUILD_MEM_REQUEST",
+            "displayName": "Build Memory Request",
+            "description": "The requested memory for a build",
+            "value": "512Mi",
+            "required": true
+        },
+        {
+            "name": "BUILD_CPU_LIMIT",
+            "displayName": "Build CPU Limit",
+            "description": "The limit of CPU to allow for a build",
+            "value": "1000m",
+            "required": true
+        },
+        {
+            "name": "BUILD_MEM_LIMIT",
+            "displayName": "Build Memory Limit",
+            "description": "The limit of memory to allow for a build",
+            "value": "512Mi",
+            "required": true
+        },
+        {
+            "name": "DEPLOY_CPU_REQUEST",
+            "displayName": "Deploy CPU Request",
+            "description": "The requested CPU for a deploy.",
+            "value": "100m",
+            "required": true
+        },
+        {
+            "name": "DEPLOY_MEM_REQUEST",
+            "displayName": "Deploy Memory Request",
+            "description": "The requested memory for a deploy",
+            "value": "512Mi",
+            "required": true
+        },
+        {
+            "name": "DEPLOY_CPU_LIMIT",
+            "displayName": "Deploy CPU Limit",
+            "description": "The limit of CPU to allow for a deploy",
+            "value": "500m",
+            "required": true
+        },
+        {
+            "name": "DEPLOY_MEM_LIMIT",
+            "displayName": "Deploy Memory Limit",
+            "description": "The limit of memory to allow for a deploy",
+            "value": "512Mi",
+            "required": true
+        }
+    ]
+}
