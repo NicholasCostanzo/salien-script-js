@@ -107,10 +107,7 @@
                     {
                         "type": "ConfigChange"
                     }
-                ],
-                "postCommit": {
-                    "script": "npm run lint"
-                }
+                ]
             }
         },
         {
