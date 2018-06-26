@@ -163,6 +163,18 @@
                             {
                                 "name": "${COMPONENT_NAME}",
                                 "image": "${COMPONENT_NAME}:latest",
+                                "command": [
+                                    "node"
+                                ],
+                                "args": [
+                                    "cli.js",
+                                    "-t",
+                                    "${SALIEN_TOKEN}",
+                                    "${SELECT_GROUP}",
+                                    "${GROUP_ID}",
+                                    "${SELECT_PLANET}",
+                                    "${PLANET_ID}"
+                                ],
                                 "ports": [],
                                 "env": [
                                     {
@@ -213,14 +225,47 @@
             "displayName": "Component Name",
             "description": "The name assigned to all of the objects defined in this template.",
             "required": true,
-            "value": "nodejs-example"
+            "value": "salien-script-js"
+        },
+        {
+            "name": "SALIEN_TOKEN",
+            "displayName": "Salien Game Token",
+            "description": "Token from https://steamcommunity.com/saliengame/gettoken",
+            "required": false
+        },
+        {
+            "name": "SELECT_GROUP",
+            "displayName": "Select Group",
+            "description": "!!! Leave blank if not specifying group ID !!!",
+            "required": false,
+            "value": "-g"
+        },
+        {
+            "name": "GROUP_ID",
+            "displayName": "Group ID",
+            "description": "ID associated with group you choose to represent https://steamcommunity.com/groups/YOUR_GROUP_NAME_HERE/memberslistxml/?xml=1",
+            "required": false,
+            "value": "103582791429670253"
+        },
+        {
+            "name": "SELECT_PLANET",
+            "diplayName": "Select Planet",
+            "description": "!!! Leave blank if not specifying planet ID !!!",
+            "required": false,
+            "value":  "-p"
+        },
+        {
+            "name": "PLANET_ID",
+            "displayName": "Planet ID",
+            "description": "ID associated with the planet to prioritize",
+            "required": false
         },
         {
             "name": "SOURCE_REPOSITORY_URL",
             "displayName": "Git Repository URL",
             "description": "The URL of the repository with your application source code.",
             "required": true,
-            "value": ""
+            "value": "https://github.com/South-Paw/salien-script-js.git"
         },
         {
             "name": "SOURCE_REPOSITORY_REF",
