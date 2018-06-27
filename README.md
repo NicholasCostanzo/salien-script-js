@@ -154,6 +154,8 @@ For example:
 ]
 ```
 
+## Advanced: Deploying to OpenShift
+
 ### Updating
 
 If you created your app using web-console, you need to clone heroku repo first
