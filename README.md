@@ -1,11 +1,12 @@
 # salien-script-js
 
-👽 An easy to install, run and update Node.js script for the Steam salien mini-game. 
+👽 A easy to install, run and update Node.js script for the Steam salien mini-game.
 
 > A Node.js implementation of https://github.com/SteamDatabase/SalienCheat by [xPaw](https://github.com/xPaw) with additional features!
 
 [![npm](https://img.shields.io/npm/v/salien-script-js.svg)](https://www.npmjs.com/package/salien-script-js)
 [![CI Status](https://img.shields.io/travis/South-Paw/salien-script-js.svg)](https://travis-ci.org/South-Paw/salien-script-js)
+[![Coveralls Status](https://img.shields.io/coveralls/github/South-Paw/salien-script-js.svg)](https://coveralls.io/github/South-Paw/salien-script-js)
 [![Dependencies](https://david-dm.org/South-Paw/salien-script-js.svg)](https://david-dm.org/South-Paw/salien-script-js)
 [![Dev Dependencies](https://david-dm.org/South-Paw/salien-script-js/dev-status.svg)](https://david-dm.org/South-Paw/salien-script-js?type=dev)
 
@@ -13,14 +14,23 @@
 
 ## 🌈 Features
 
-* 🎉 Easy to install, run and update
-* ✉️ Update checker and log notifications
+* 🎉 [Easy to install, run and update](#️-how-to-use-this)
+
+* ✉️ [Update checker and log notifications](#-how-to-update-the-script)
+
 * 👽 Same logic as the [PHP version](https://github.com/SteamDatabase/SalienCheat) (we almost have parity)
-* 👌 Pick your own steam group
-* 👥 Works well with multiple tokens/scripts
-* 👀 Name your running scripts
-* 🐳 Docker support
-* ☁️ Heroku support
+
+* 👌 [Pick your own steam group](#-represent-your-steam-group-optional)
+
+* 👥 [Works well with multiple tokens/scripts](#-multiple-tokensscripts)
+
+* 👀 [Name your running scripts](#-multiple-tokensscripts)
+
+* ☁️ [Heroku support](#advanced-️-deploying-to-heroku)
+
+* 🐳 [Docker support](#advanced--running-as-a-docker-container)
+
+* 📦 [npm package export](#advanced--usage-as-an-npm-package)
 
 > Note: We'll try our best to keep this version up to date with the PHP and other versions! Suggestions welcome.
 
@@ -35,7 +45,7 @@
 5. Run `npm install -g salien-script-js` to install this project.
 6. Run the script by typing `salien-script-js --token xxxxxxxx` where `xxxxxxxx` is your token from step 3.
 
-> ### If you appreciate the script, please leave a star ⭐ on the project!
+> ### Remeber to drop us a ⭐ star on the project if you appreciate this script!
 
 ## 😍 How to update the script
 
@@ -63,18 +73,8 @@ You can get your group id by going to https://steamcommunity.com/groups/YOUR_GRO
 If you'd like to team up with an established larger group please consider using either:
 
 * [/r/saliens](https://steamcommunity.com/groups/summersaliens) id: `103582791462557324`
-* [100Pals](https://steamcommunity.com/groups/100pals) id: `103582791454524084`
 * [SteamDB](https://steamcommunity.com/groups/steamdb) id: `103582791434298690`
-
-### 🌌 Select a planet (Optional)
-
-If you would like to override planet selection in favor of a particular one, provide the `--planet` CLI option with the planet ID.
-
-```sh-session
-salien-script-js --token xxxxxxxx --planet 15
-```
-
----
+* [100Pals](https://steamcommunity.com/groups/100pals) id: `103582791454524084`
 
 ### 👥 Multiple tokens/scripts
 
@@ -82,10 +82,23 @@ Simply open another PowerShell window and run `salien-script-js --token yyyyyyyy
 
 ---
 
+### Advanced: CLI Arguments
+
+```
+  Usage:
+    salien-script-js [options]
+
+  Options:
+    --token, -t           Your Saliens game token.
+    --group, -g           (Optional) The ID of a steam group you'd like to represent.
+    --name, -n            (Optional) The name to display on this instance of the script.
+    --logRequests, -l     (Optional) Set to true if you'd like to show Steam API requests in the logs.
+```
+
 ## Advanced: 📦 Usage as an npm package
 
 ```js
-const SalienScript = require('salien-script-js');
+const { SalienScript } = require('salien-script-js');
 
 const config = {
   token: '', // Your token from https://steamcommunity.com/saliengame/gettoken
@@ -119,8 +132,12 @@ You can also set up continuous deployment through Docker Hub. [Read the followin
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 1. Click the button above.
-2. Set SALIEN_CONFIG_V2 (see note below).
+2. Set SALIEN_CONFIG_V2 ([see note below](#heroku-configuration)).
 3. That's all!
+
+To check if it works, visit logs at https://dashboard.heroku.com/apps/[YOUR_APP_NAME]/logs
+
+If you see "Application Error" when going to the webpage of your app, it's okay - the script will still run anyway.
 
 ### Deploying with Heroku CLI
 
@@ -133,28 +150,84 @@ $ git push heroku master
 $ heroku ps:scale web=0 salien=1
 ```
 
+And to check if it works:
+```bash
+$ heroku logs --tail
+```
+
 ### Heroku configuration
 
 `SALIEN_CONFIG_V2` is just an array of config that will be passed to `SalienScript` constructor.
 
-For example:
+If you only have one account, then your config will look like this:
 
 ```JSON
 [
     {
-        "token": "token1",
-        "clan": "clan1",
-        "name": "name1"
+        "token": "12345"
+    }
+]
+```
+
+The only mandatory key for each account is `token` and you can add extra keys to this config such as `clan`, `name` or `selectedPlanetId`:
+
+```JSON
+[
+    {
+        "token": "12345",
+        "clan": "67890",
+        "name": "first_acc",
+        "selectedPlanetId": "28"
+    }
+]
+```
+
+If you had two accounts for example;
+
+* one named `first_acc` with a token of `123` and a group of `98712`
+* one named `second_acc` with a token of `456` and a group of `67890`
+
+then you would make your config look like this:
+
+```JSON
+[
+    {
+        "token": "123",
+        "clan": "98712",
+        "name": "first_acc"
     },
     {
-        "token": "token2",
-        "clan": "clan2",
-        "name": "name2"
+        "token": "456",
+        "clan": "67890",
+        "name": "second_acc"
     }
 ]
 ```
 
 ### Updating
+
+#### Easy
+
+The easiest way to update script on heroku is to just delete your old app and create new.
+
+You can also link your Heroku app to your Dropbox account. To do that, [download this repository](https://github.com/South-Paw/salien-script-js/archive/master.zip) as a zip archive, and unpack it to the folder created on your Dropbox.
+
+For more info on this, visit: https://devcenter.heroku.com/articles/dropbox-sync
+
+#### Medium
+
+1. Fork this repo on github.
+2. In your heroku app control panel, at Deploy tab, connect your app to a forked repository and enable automatic deploys.
+3. When update comes, merge changes into your repo on github:
+    1. Create new pull request.
+    2. Select your repo's master branch as base fork, and South-Paw/salien-script-js master branch as head fork.
+    3. Click on a big green button "Merge pull request".
+
+For more info on connecting github account, visit: https://devcenter.heroku.com/articles/github-integration
+
+For more info on syncing fork using web interface, check this tutorial: https://www.sitepoint.com/quick-tip-sync-your-fork-with-the-original-without-the-cli/
+
+#### Hard
 
 If you created your app using web-console, you need to clone heroku repo first
 
