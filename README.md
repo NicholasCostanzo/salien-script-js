@@ -15,21 +15,12 @@
 ## 🌈 Features
 
 * 🎉 [Easy to install, run and update](#️-how-to-use-this)
-
 * ✉️ [Update checker and log notifications](#-how-to-update-the-script)
-
 * 👽 Same logic as the [PHP version](https://github.com/SteamDatabase/SalienCheat) (we almost have parity)
-
 * 👌 [Pick your own steam group](#-represent-your-steam-group-optional)
-
 * 👥 [Works well with multiple tokens/scripts](#-multiple-tokensscripts)
-
 * 👀 [Name your running scripts](#-multiple-tokensscripts)
-
-* ☁️ [Heroku support](#advanced-️-deploying-to-heroku)
-
 * 🐳 [Docker support](#advanced--running-as-a-docker-container)
-
 * 📦 [npm package export](#advanced--usage-as-an-npm-package)
 
 > Note: We'll try our best to keep this version up to date with the PHP and other versions! Suggestions welcome.
@@ -98,7 +89,7 @@ Simply open another PowerShell window and run `salien-script-js --token yyyyyyyy
 ## Advanced: 📦 Usage as an npm package
 
 ```js
-const { SalienScript } = require('salien-script-js');
+const SalienScript = require('salien-script-js');
 
 const config = {
   token: '', // Your token from https://steamcommunity.com/saliengame/gettoken
@@ -125,6 +116,7 @@ $ docker run -d --name salien-script-js salien-script-js [options]
 
 You can also set up continuous deployment through Docker Hub. [Read the following comment](https://github.com/South-Paw/salien-script-js/pull/11#issuecomment-399747215) for a guide.
 
+<<<<<<< HEAD
 ## Advanced: ☁️ Deploying to heroku
 
 ### Deploying with web-console
@@ -247,6 +239,8 @@ $ git merge remotes/upstream/master
 $ git push heroku master
 ```
 
+=======
+>>>>>>> upstream/master
 ---
 
 ## 👨‍💻 Contributing and Development
